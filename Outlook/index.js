@@ -6,18 +6,29 @@ var microsoftGraph = require("@microsoft/microsoft-graph-client");
 var handle = {};
 handle['/'] = home;
 handle['/authorize'] = authorize;
+handle['/mail'] = mail;
 handle['/calendar'] = calendar;
 
+/**
+ * Start server : go to server.js
+ */
 server.start(router.route, handle);
 
+/**
+ * Display home page to access to the microsoft home page connexion
+ * @param {*} response 
+ * @param {*} request 
+ */
 function home(response, request) {
   console.log('Request handler \'home\' was called.');
+
   response.writeHead(200, { 'Content-Type': 'text/html' });
   response.write('<p>Please <a href="' + authHelper.getAuthUrl() + '">sign in</a> with your Office 365 or Outlook.com account.</p>');
   response.end();
 }
 
 var url = require('url');
+
 function authorize(response, request) {
   console.log('Request handler \'authorize\' was called.');
 
@@ -67,7 +78,7 @@ function tokenReceived(response, error, token) {
         'node-tutorial-token-expires=' + token.token.expires_at.getTime() + ';Max-Age=4000',
         'node-tutorial-email=' + email + ';Max-Age=4000'];
         response.setHeader('Set-Cookie', cookies);
-        response.writeHead(302, { 'Location': 'http://localhost:8000/calendar' });
+        response.writeHead(302, { 'Location': 'http://localhost:8000/mail' });
         response.end();
       }
     });
@@ -109,12 +120,13 @@ function getAccessToken(request, response, callback) {
 }
 
 function mail(response, request) {
-  getAccessToken(request, response, function(error, token) {
-    console.log('Token found in cookie: ', token);
+  getAccessToken(request, response, function (error, token) {
+    // console.log('Token found in cookie: ', token);
     var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
     console.log('Email found in cookie: ', email);
     if (token) {
-      response.writeHead(200, {'Content-Type': 'text/html'});
+      console.log(token)
+      response.writeHead(200, { 'Content-Type': 'text/html' });
       response.write('<div><h1>Your inbox</h1></div>');
 
       // Create a Graph client
@@ -133,6 +145,7 @@ function mail(response, request) {
         .select('subject,from,receivedDateTime,isRead')
         .orderby('receivedDateTime DESC')
         .get((err, res) => {
+          console.log(res)
           if (err) {
             console.log('getMessages returned an error: ' + err);
             response.write('<p>ERROR: ' + err + '</p>');
@@ -140,10 +153,10 @@ function mail(response, request) {
           } else {
             console.log('getMessages returned ' + res.value.length + ' messages.');
             response.write('<table><tr><th>From</th><th>Subject</th><th>Received</th></tr>');
-            res.value.forEach(function(message) {
+            res.value.forEach(function (message) {
               console.log('  Subject: ' + message.subject);
               var from = message.from ? message.from.emailAddress.name : 'NONE';
-              response.write('<tr><td>' + from + 
+              response.write('<tr><td>' + from +
                 '</td><td>' + (message.isRead ? '' : '<b>') + message.subject + (message.isRead ? '' : '</b>') +
                 '</td><td>' + message.receivedDateTime.toString() + '</td></tr>');
             });
@@ -153,7 +166,7 @@ function mail(response, request) {
           }
         });
     } else {
-      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.writeHead(200, { 'Content-Type': 'text/html' });
       response.write('<p> No token found in cookie!</p>');
       response.end();
     }
@@ -162,13 +175,11 @@ function mail(response, request) {
 
 function calendar(response, request) {
   getAccessToken(request, response, function (error, token) {
-    console.log('Token found in cookie: ', token);
+    console.log(request.headers.cookie)
     var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
-    console.log('Email found in cookie: ', email);
-    if (token) {
-      response.writeHead(200, { 'Content-Type': 'text/html' });
-      response.write('<div><h1>Your calendar</h1></div>');
 
+    if (token) {
+      console.log(token)
       // Create a Graph client
       var client = microsoftGraph.Client.init({
         authProvider: (done) => {
@@ -181,8 +192,8 @@ function calendar(response, request) {
       client
         .api('/me/events')
         .header('X-AnchorMailbox', email)
-        .top(10)
-        .select('subject,start,end')
+        .top(1000)
+        .select('subject,start,end,location')
         .orderby('start/dateTime DESC')
         .get((err, res) => {
           if (err) {
@@ -192,13 +203,12 @@ function calendar(response, request) {
             response.end();
           } else {
             console.log('getEvents returned ' + res.value.length + ' events.');
-            response.write('<table><tr><th>Subject</th><th>Start</th><th>End</th><th>Attendees</th></tr>');
+            response.writeHead(200, { 'Content-Type': 'text/html' });
             res.value.forEach(function (event) {
               console.log('  Subject: ' + event.subject);
-              response.write('<tr><td>' + event.subject +
-                '</td><td>' + event.start.dateTime.toString() +
-                '</td><td>' + event.end.dateTime.toString() + '</td></tr>');
+              res.sendfile('./public/index.html');
             });
+            res.sendfile('./public/index.html');
 
             response.write('</table>');
             response.end();

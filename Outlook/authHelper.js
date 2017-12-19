@@ -27,6 +27,9 @@ exports.getTokenFromCode = getTokenFromCode;
 exports.refreshAccessToken = refreshAccessToken;
 exports.getAuthUrl = getAuthUrl;
 
+/**
+ * 
+ */
 function getAuthUrl() {
   var returnVal = oauth2.authorizationCode.authorizeURL({
     redirect_uri: redirectUri,
@@ -36,6 +39,12 @@ function getAuthUrl() {
   return returnVal;
 }
 
+/**
+ * Get an one hour token access
+ * @param {*} auth_code 
+ * @param {*} callback 
+ * @param {*} response 
+ */
 function getTokenFromCode(auth_code, callback, response) {
   var token;
   oauth2.authorizationCode.getToken({
@@ -48,12 +57,18 @@ function getTokenFromCode(auth_code, callback, response) {
       callback(response, error, null);
     } else {
       token = oauth2.accessToken.create(result);
-      console.log('Token created: ', token.token);
+      console.log('Token created');
+      // console.log(token.tokenv)
       callback(response, null, token);
     }
   });
 }
 
+/**
+ * Refresh the token access
+ * @param {*} refreshToken 
+ * @param {*} callback 
+ */
 function refreshAccessToken(refreshToken, callback) {
   var tokenObj = oauth2.accessToken.create({ refresh_token: refreshToken });
   tokenObj.refresh(callback);

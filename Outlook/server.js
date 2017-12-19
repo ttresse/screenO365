@@ -7,16 +7,18 @@ var url = require('url');
 //mdp application
 //chxNGK643|hpmiIFLR90]_!
 
+
+
 function start(route, handle) {
   function onRequest(request, response) {
     var pathName = url.parse(request.url).pathname;
-    console.log('Request for ' + pathName + ' received.');
+    // console.log('Request for ' + pathName + ' received.');
     route(handle, pathName, response, request);
   }
 
   var port = 8000;
   http.createServer(onRequest).listen(port);
-  console.log('Server has started. Listening on port: ' + port + '...');
+  // console.log('Server has started. Listening on port: ' + port + '...');
 }
 
 exports.start = start;
