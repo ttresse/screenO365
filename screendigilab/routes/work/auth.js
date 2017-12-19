@@ -22,11 +22,14 @@ var scopes = ['openid',
 
 ///////
 module.exports = {
-    authenticate: authenticate
+    authenticate: authenticate,
+    getTokenFromCode: getTokenFromCode
 }
 
 var oauth2 = require('simple-oauth2').create(credentials);
 var redirectUri = 'http://localhost:8000/authorize';
+
+var token;
 
 /**
  * fonction authenticated
@@ -36,6 +39,26 @@ function authenticate() {
         scope: scopes.join(' ')
     });
     return returnVal;
+}
+
+/**
+ * get token from code
+ */
+function getTokenFromCode(code, response) {
+    return new Promise(function (resolve, reject) {
+        oauth2.authorizationCode.getToken({
+            code: code,
+            redirect_uri: redirectUri,
+            scope: scopes.join(' ')
+        })
+            .then(function (result) {
+                token = oauth2.accessToken.create(result);
+                return resolve(token)
+            })
+            .catch(function (err) {
+                return reject(err)
+            })
+    })
 }
 
 
