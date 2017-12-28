@@ -31,11 +31,15 @@ var url = require('url');
 
 function authorize(response, request) {
   console.log('Request handler \'authorize\' was called.');
-
+  // console.log(request)
   // The authorization code is passed as a query parameter
+  // console.log(request.url)
+
   var url_parts = url.parse(request.url, true);
+  // console.log(url_parts)
+
   var code = url_parts.query.code;
-  console.log('Code: ' + code);
+  // console.log('Code: ' + code);
   authHelper.getTokenFromCode(code, tokenReceived, response);
 }
 
@@ -62,14 +66,14 @@ function getUserEmail(token, callback) {
 
 function tokenReceived(response, error, token) {
   if (error) {
-    console.log('Access token error: ', error.message);
+    // console.log('Access token error: ', error.message);
     response.writeHead(200, { 'Content-Type': 'text/html' });
     response.write('<p>ERROR: ' + error + '</p>');
     response.end();
   } else {
     getUserEmail(token.token.access_token, function (error, email) {
       if (error) {
-        console.log('getUserEmail returned an error: ' + error);
+        // console.log('getUserEmail returned an error: ' + error);
         response.write('<p>ERROR: ' + error + '</p>');
         response.end();
       } else if (email) {
@@ -99,7 +103,7 @@ function getAccessToken(request, response, callback) {
 
   if (expiration <= new Date()) {
     // refresh token
-    console.log('TOKEN EXPIRED, REFRESHING');
+    // console.log('TOKEN EXPIRED, REFRESHING');
     var refresh_token = getValueFromCookie('node-tutorial-refresh-token', request.headers.cookie);
     authHelper.refreshAccessToken(refresh_token, function (error, newToken) {
       if (error) {
@@ -123,9 +127,8 @@ function mail(response, request) {
   getAccessToken(request, response, function (error, token) {
     // console.log('Token found in cookie: ', token);
     var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
-    console.log('Email found in cookie: ', email);
+    // console.log('Email found in cookie: ', email);
     if (token) {
-      console.log(token)
       response.writeHead(200, { 'Content-Type': 'text/html' });
       response.write('<div><h1>Your inbox</h1></div>');
 
@@ -145,16 +148,15 @@ function mail(response, request) {
         .select('subject,from,receivedDateTime,isRead')
         .orderby('receivedDateTime DESC')
         .get((err, res) => {
-          console.log(res)
           if (err) {
-            console.log('getMessages returned an error: ' + err);
+            // console.log('getMessages returned an error: ' + err);
             response.write('<p>ERROR: ' + err + '</p>');
             response.end();
           } else {
-            console.log('getMessages returned ' + res.value.length + ' messages.');
+            // console.log('getMessages returned ' + res.value.length + ' messages.');
             response.write('<table><tr><th>From</th><th>Subject</th><th>Received</th></tr>');
             res.value.forEach(function (message) {
-              console.log('  Subject: ' + message.subject);
+              // console.log('  Subject: ' + message.subject);
               var from = message.from ? message.from.emailAddress.name : 'NONE';
               response.write('<tr><td>' + from +
                 '</td><td>' + (message.isRead ? '' : '<b>') + message.subject + (message.isRead ? '' : '</b>') +
@@ -174,46 +176,57 @@ function mail(response, request) {
 }
 
 function calendar(response, request) {
-  getAccessToken(request, response, function (error, token) {
-    console.log(request.headers.cookie)
-    var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
+  // getAccessToken(request, response, function (error, token) {
+  //   var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
 
-    if (token) {
-      console.log(token)
-      // Create a Graph client
-      var client = microsoftGraph.Client.init({
-        authProvider: (done) => {
-          // Just return the token
-          done(null, token);
-        }
-      });
+  //   if (token) {
+  //     console.log(token)
+  //     // Create a Graph client
+  //     var client = microsoftGraph.Client.init({
+  //       authProvider: (done) => {
+  //         // Just return the token
+  //         done(null, token);
+  //       }
+  //     });
 
-      // Get the 10 events with the greatest start date
-      client
-        .api('/me/events')
-        .header('X-AnchorMailbox', email)
-        .top(1000)
-        .select('subject,start,end,location')
-        .orderby('start/dateTime DESC')
-        .get((err, res) => {
-          if (err) {
-            console.log('getEvents returned an error: ' + err);
-            console.log(err)
-            response.write('<p>ERROR: ' + err + '</p>');
-            response.end();
-          } else {
-            console.log('getEvents returned ' + res.value.length + ' events.');
-            response.writeHead(200, { 'Content-Type': 'text/html' });
-            res.value.forEach(function (event) {
-              console.log('  Subject: ' + event.subject);
-              res.sendfile('./public/index.html');
-            });
-            res.sendfile('./public/index.html');
+  //     var reunion = [];
 
-            response.write('</table>');
-            response.end();
-          }
-        });
-    }
-  });
+  //     client
+  //       .api('/me/events')
+  //       .header('X-AnchorMailbox', email)
+  //       .top(15)
+  //       .select('subject,start,end,location,attendees,organizer')
+  //       .orderby('start/dateTime DESC')
+  //       .get((err, res) => {
+  //         if (err) {
+  //           console.log('getEvents returned an error');
+  //         } else {
+  //           res.value.forEach(function (message) {
+  //             if (formatingDay(message.start.dateTime, message.end.dateTime)) {
+
+  //               var debut = getHourAndMinutes(message.start.dateTime);
+  //               var end = getHourAndMinutes(message.end.dateTime);
+
+  //               reunion.push({
+  //                 session: message.subject,
+  //                 dateDebut: message.start.dateTime,
+  //                 heureDebut: debut.heure,
+  //                 minuteDebut: debut.minute,
+  //                 dateFin: message.end.dateTime,
+  //                 heureFin: end.heure,
+  //                 minuteFin: end.minute,
+  //                 organisateur: message.organizer.emailAddress.name
+  //               });
+  //             }
+  //           })
+
+  //           var dailyPlanning = handleDailyMeeting(reunion);
+  //           request.render('home', {
+  //             title: 'DigiLab',
+  //             response: dailyPlanning
+  //           });
+  //         }
+  //       });
+  //   }
+  // });
 }

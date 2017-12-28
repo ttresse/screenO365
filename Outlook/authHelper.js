@@ -53,12 +53,12 @@ function getTokenFromCode(auth_code, callback, response) {
     scope: scopes.join(' ')
   }, function (error, result) {
     if (error) {
-      console.log('Access token error: ', error.message);
+      // console.log('Access token error: ', error.message);
       callback(response, error, null);
     } else {
       token = oauth2.accessToken.create(result);
-      console.log('Token created');
-      // console.log(token.tokenv)
+      // console.log('Token created');
+      // console.log(token)
       callback(response, null, token);
     }
   });
