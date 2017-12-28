@@ -20,14 +20,7 @@ var scopes = ['openid',
     'Mail.Read',
     'Calendars.Read'];
 
-///////
-module.exports = {
-    authenticate: authenticate,
-    getTokenFromCode: getTokenFromCode
-}
-
 var oauth2 = require('simple-oauth2').create(credentials);
-var redirectUri = 'http://localhost:8000/authorize';
 
 var token;
 
@@ -48,7 +41,6 @@ function getTokenFromCode(code, response) {
     return new Promise(function (resolve, reject) {
         oauth2.authorizationCode.getToken({
             code: code,
-            redirect_uri: redirectUri,
             scope: scopes.join(' ')
         })
             .then(function (result) {
@@ -61,6 +53,21 @@ function getTokenFromCode(code, response) {
     })
 }
 
+/**
+ * Refresh the token access
+ * @param {*} refreshToken 
+ * @param {*} callback 
+ */
+function refreshAccessToken(refreshToken, callback) {
+    var tokenObj = oauth2.accessToken.create({ refresh_token: refreshToken });
+    tokenObj.refresh(callback);
+}
 
+///////
+module.exports = {
+    authenticate: authenticate,
+    getTokenFromCode: getTokenFromCode,
+    refreshAccessToken: refreshAccessToken
+}
 
 

@@ -5,21 +5,190 @@
     <title>
         <%= title %> Home</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript">
+        function startTime() {
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+
+            var year = today.getYear()
+            if (year < 1000)
+                year += 1900
+
+            var day = today.getDay()
+            var month = today.getMonth()
+            var daym = today.getDate()
+
+            if (daym < 10)
+                daym = "0" + daym
+
+            var dayarray = new Array("Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi",
+                "Vendredi", "Samedi")
+            var montharray = new Array("Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre")
+            document.getElementById('jour').innerHTML = dayarray[day] + " " + daym + " " + montharray[month];
+
+            document.getElementById('horloge').innerHTML =
+                h + ":" + m + ":" + s;
+            var t = setTimeout(startTime, 500);
+        }
+        function checkTime(i) {
+            if (i < 10) { i = "0" + i };  // add zero in front of numbers < 10
+            return i;
+        }
+
+    </script>
+    <meta charset="utf-8" />
 </head>
 
-<body>
-    <div>
-        <%= response.subject %>
-    </div>
-    <div>
-        <%= response.start.dateTime %>
-    </div>
-    <div>
-        <%= response.end.dateTime %>
-    </div>
-    <div>
-        <%= response.location.displayName %>
+<body onload="startTime()">
+    <div class="wrapper">
+        <div class="header">
+            <div class="row">
+                <div class="date">
+                    <center id="jour"></center>
+                </div>
+                <div class="title">
+                    <center>DigiLab 2 Think</center>
+                </div>
+                <div class="time">
+                    <center id="horloge"></center>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <center class="creneau">
+                <div class="heure">
+                    <%= response.heureDebut %> -
+                        <%= response.heureFin %>
+                </div>
+                <!-- <progress id="avancement" class="progressBar" value="68" max="100"></progress> -->
+            </center>
+            <div class="information">
+                <div class="session">
+                    <strong>Session</strong> :
+                    <%= response.session %>
+                </div>
+                <div class="facilitateur">
+                    <strong>Facilitateur</strong> :
+                    <%= response.organisateur %>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar">
+            <table class="planing">
+                <tr>
+                    <th colspan="4" scope="colgroup">8h</th>
+                    <th colspan="4" scope="colgroup">9h</th>
+                    <th colspan="4" scope="colgroup">10h</th>
+                    <th colspan="4" scope="colgroup">11h</th>
+                    <th colspan="4" scope="colgroup">12h</th>
+                    <th colspan="4" scope="colgroup">13h</th>
+                    <th colspan="4" scope="colgroup">14h</th>
+                    <th colspan="4" scope="colgroup">15h</th>
+                    <th colspan="4" scope="colgroup">16h</th>
+                    <th colspan="4" scope="colgroup">17h</th>
+                    <th colspan="4" scope="colgroup">18h</th>
+                    <th colspan="4" scope="colgroup">19h</th>
+                    <th colspan="4" scope="colgroup">20h</th>
+                </tr>
+                <tr>
+                    <td data-status="<%= response.hoursPlanning[0] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[1] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[2] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[3] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[4] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[5] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[6] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[7] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[8] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[9] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[10] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[11] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[12] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[13] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[14] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[15] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[16] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[17] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[18] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[19] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[20] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[21] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[22] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[23] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[24] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[25] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[26] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[27] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[28] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[29] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[30] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[31] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[32] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[33] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[34] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[35] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[36] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[37] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[38] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[39] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[40] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[41] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[42] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[43] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[44] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[45] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[46] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[47] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[48] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[49] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[50] %>"></td>
+                    <td data-status="<%= response.hoursPlanning[51] %>"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <div class="nextsession">
+                <strong>Prochaine session :</strong><%= response.nextsession %></div>
+            <div class="soprasteria">
+                <img class="logoSopraSteria" src="/images/soprasteria.png">
+            </div>
+        </div>
     </div>
 </body>
 
-</html>
+<!-- <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="mystyle.css">
+    </head>
+    
+    <body>
+    
+        <div class="header">
+            <div class="row">
+                <div class="column side">
+                    <img id="digilab" src="assets/digilab.png">
+                </div>
+                <div class="column middle">
+                    <div id="date">17th december 2017</div>
+                </div>
+            </div>
+        </div>
+    
+    
+        <div>
+            <img src="assets/soprasteria.png">
+        </div>
+    </body>
+    
+    </html> -->
